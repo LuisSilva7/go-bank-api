@@ -26,7 +26,7 @@ func (s *APIServer) Run() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/accounts", makeHttpHandleFunc(s.handleAccount))
-	router.HandleFunc("/accounts/{id}", makeHttpHandleFunc(s.handleGetAccountByID))
+	router.HandleFunc("/accounts/{id}", withJWTAuth(makeHttpHandleFunc(s.handleGetAccountByID)))
 	router.HandleFunc("/transfer", makeHttpHandleFunc(s.handleTransfer))
 
 	log.Println("JSON API server running on port: ", s.listenAddr)
@@ -117,6 +117,13 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	return json.NewEncoder(w).Encode(v)
+}
+
+func withJWTAuth(handlerFunc http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("calling JWT auth middleware")
+		handlerFunc(w, r)
+	}
 }
 
 type apiFunc func(http.ResponseWriter, *http.Request) error
