@@ -1,3 +1,4 @@
+
 package main
 
 import (
@@ -8,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	jwt "github.com/golang-jwt/jwt/v4"
 )
 
 type APIServer struct {
@@ -124,6 +126,10 @@ func withJWTAuth(handlerFunc http.HandlerFunc) http.HandlerFunc {
 		fmt.Println("calling JWT auth middleware")
 		handlerFunc(w, r)
 	}
+}
+
+func validateJWT(tokenString string) (*jwt.Token, error) {
+	
 }
 
 type apiFunc func(http.ResponseWriter, *http.Request) error
